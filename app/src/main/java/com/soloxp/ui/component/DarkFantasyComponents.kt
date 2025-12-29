@@ -105,3 +105,13 @@ fun ActionButton(
         }
     }
 }
+@Composable
+fun SummaryRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, color = Color.Gray)
+        Text(value, color = NeonCyan, fontWeight = FontWeight.Bold)
+    }
+}

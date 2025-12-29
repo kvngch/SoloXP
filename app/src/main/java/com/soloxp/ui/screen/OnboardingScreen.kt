@@ -192,13 +192,3 @@ fun SummaryStep(state: OnboardingUiState) {
     }
 }
 
-@Composable
-fun SummaryRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, color = Color.Gray)
-        Text(value, color = NeonCyan, fontWeight = FontWeight.Bold)
-    }
-}
