@@ -26,6 +26,7 @@ import com.soloxp.ui.component.NeonCyan
 import com.soloxp.ui.screen.*
 import com.soloxp.ui.theme.Typography
 import com.soloxp.ui.viewmodel.*
+import com.soloxp.ui.viewmodel.ProgressViewModel
 import com.soloxp.data.repository.SoloXpRepository
 
 class MainActivity : ComponentActivity() {
@@ -106,7 +107,12 @@ fun Dashboard(repository: SoloXpRepository, navController: androidx.navigation.N
                 DungeonScreen(viewModel = vm)
             }
             composable(Screen.Quests.route) { QuestsScreen(quests = emptyList()) }
-            composable(Screen.Progress.route) { ProgressScreen() }
+            composable(Screen.Progress.route) { 
+                val vm: ProgressViewModel = viewModel(factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T = ProgressViewModel(repository) as T
+                })
+                ProgressScreen(viewModel = vm)
+            }
             composable(Screen.Inventory.route) { 
                 val vm: InventoryViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T = InventoryViewModel(repository) as T

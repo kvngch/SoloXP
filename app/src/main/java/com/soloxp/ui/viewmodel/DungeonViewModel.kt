@@ -56,7 +56,8 @@ class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
     fun completeQuest(quest: Quest) {
         viewModelScope.launch {
             val currentProfile = _uiState.value.userProfile
-            val newXp = currentProfile.xpTotal + quest.xpReward
+            val xpWithBonus = calculateArtifactBonus(quest.xpReward)
+            val newXp = currentProfile.xpTotal + xpWithBonus
             
             var newRank = currentProfile.rank
             val threshold = _uiState.value.xpToNextLevel
@@ -78,6 +79,18 @@ class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
                 repository.saveItem(loot)
             }
         }
+    }
+
+    private suspend fun calculateArtifactBonus(baseXp: Int): Int {
+        val items = repository.getItems().first()
+        var bonusMultiplier = 0f
+        items.forEach { item ->
+            when (item.name) {
+                "Fragment de Lumière" -> bonusMultiplier += 0.01f * item.quantity
+                "Relique de l'Immortel" -> bonusMultiplier += 0.10f * item.quantity
+            }
+        }
+        return (baseXp * (1 + bonusMultiplier)).toInt()
     }
 
     fun rerollQuests() {
