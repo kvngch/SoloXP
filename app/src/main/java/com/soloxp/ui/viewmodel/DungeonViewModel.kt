@@ -3,13 +3,9 @@ package com.soloxp.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.soloxp.data.local.SeedData
-import com.soloxp.domain.model.Difficulty
-import com.soloxp.domain.model.Quest
-import com.soloxp.domain.model.Rank
-import com.soloxp.domain.model.UserProfile
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.soloxp.data.repository.SoloXpRepository
+import com.soloxp.domain.model.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class DungeonUiState(
@@ -19,63 +15,72 @@ data class DungeonUiState(
     val xpToNextLevel: Int = 1000
 )
 
-class DungeonViewModel : ViewModel() {
+class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(DungeonUiState())
     val uiState: StateFlow<DungeonUiState> = _uiState.asStateFlow()
 
     init {
-        loadDungeon()
+        observeData()
     }
 
-    private fun loadDungeon() {
+    private fun observeData() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             
-            // In a real app, we'd fetch from repository
-            val profile = UserProfile(rank = Rank.E, xpTotal = 450, energyLevel = 7)
-            val allQuests = SeedData.getInitialQuests()
-            
-            val filteredQuests = filterQuestsByEnergy(allQuests, profile.energyLevel)
-            
-            _uiState.value = _uiState.value.copy(
-                userProfile = profile,
-                dailyQuests = filteredQuests.take(3),
-                isLoading = false,
-                xpToNextLevel = calculateXpThreshold(profile.rank)
-            )
+            // Initial seed if empty
+            repository.getQuests().first().let { quests ->
+                if (quests.isEmpty()) {
+                    SeedData.getInitialQuests().forEach { repository.addQuest(it) }
+                }
+            }
+
+            combine(
+                repository.getUserProfile(),
+                repository.getQuests()
+            ) { profile, allQuests ->
+                val userProfile = profile ?: UserProfile()
+                val filtered = filterQuestsByEnergy(allQuests, userProfile.energyLevel)
+                
+                DungeonUiState(
+                    userProfile = userProfile,
+                    dailyQuests = filtered.take(3),
+                    isLoading = false,
+                    xpToNextLevel = calculateXpThreshold(userProfile.rank)
+                )
+            }.collect { state ->
+                _uiState.value = state
+            }
         }
     }
 
     fun completeQuest(quest: Quest) {
-        val currentProfile = _uiState.value.userProfile
-        val newXp = currentProfile.xpTotal + quest.xpReward
-        
-        var newRank = currentProfile.rank
-        val threshold = _uiState.value.xpToNextLevel
-        
-        if (newXp >= threshold) {
-            newRank = Rank.values().getOrElse(newRank.ordinal + 1) { newRank }
+        viewModelScope.launch {
+            val currentProfile = _uiState.value.userProfile
+            val newXp = currentProfile.xpTotal + quest.xpReward
+            
+            var newRank = currentProfile.rank
+            val threshold = _uiState.value.xpToNextLevel
+            
+            if (newXp >= threshold) {
+                newRank = Rank.values().getOrElse(newRank.ordinal + 1) { newRank }
+            }
+
+            val updatedProfile = currentProfile.copy(
+                xpTotal = newXp,
+                rank = newRank
+            )
+
+            repository.saveUserProfile(updatedProfile)
+            repository.updateQuest(quest.copy(isCompleted = true))
         }
-
-        val updatedProfile = currentProfile.copy(
-            xpTotal = newXp,
-            rank = newRank
-        )
-
-        _uiState.value = _uiState.value.copy(
-            userProfile = updatedProfile,
-            dailyQuests = _uiState.value.dailyQuests.map { 
-                if (it.id == quest.id) it.copy(isCompleted = true) else it 
-            },
-            xpToNextLevel = calculateXpThreshold(newRank)
-        )
     }
 
     private fun filterQuestsByEnergy(quests: List<Quest>, energy: Int): List<Quest> {
+        val available = quests.filter { !it.isCompleted }
         return when {
-            energy <= 3 -> quests.filter { it.difficulty == Difficulty.MICRO || it.difficulty == Difficulty.MINI }
-            energy <= 7 -> quests.filter { it.difficulty != Difficulty.BOSS }
-            else -> quests
+            energy <= 3 -> available.filter { it.difficulty == Difficulty.MICRO || it.difficulty == Difficulty.MINI }
+            energy <= 7 -> available.filter { it.difficulty != Difficulty.BOSS }
+            else -> available
         }
     }
 

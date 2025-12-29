@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.map
 interface SoloXpRepository {
     fun getQuests(): Flow<List<Quest>>
     suspend fun addQuest(quest: Quest)
+    suspend fun updateQuest(quest: Quest)
     fun getUserProfile(): Flow<UserProfile?>
     suspend fun saveUserProfile(profile: UserProfile)
 }
@@ -20,6 +21,10 @@ class SoloXpRepositoryImpl(private val dao: SoloXpDao) : SoloXpRepository {
     }
 
     override suspend fun addQuest(quest: Quest) {
+        dao.insertQuest(quest.toEntity())
+    }
+
+    override suspend fun updateQuest(quest: Quest) {
         dao.insertQuest(quest.toEntity())
     }
 

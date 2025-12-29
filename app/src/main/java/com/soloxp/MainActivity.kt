@@ -8,23 +8,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.soloxp.data.local.SeedData
 import com.soloxp.ui.Screen
 import com.soloxp.ui.bottomNavItems
 import com.soloxp.ui.component.DeepBlack
 import com.soloxp.ui.component.NeonCyan
 import com.soloxp.ui.screen.*
 import com.soloxp.ui.theme.Typography
+import com.soloxp.ui.viewmodel.DungeonViewModel
+import com.soloxp.ui.viewmodel.OnboardingViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val repository = (application as SoloXpApplication).repository
+
         setContent {
             MaterialTheme(
                 colorScheme = darkColorScheme(
@@ -38,7 +45,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 if (showOnboarding) {
-                    OnboardingScreen(onFinish = { showOnboarding = false })
+                    val onboardingViewModel: OnboardingViewModel = viewModel(
+                        factory = object : ViewModelProvider.Factory {
+                            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                return OnboardingViewModel(repository) as T
+                            }
+                        }
+                    )
+                    OnboardingScreen(
+                        viewModel = onboardingViewModel,
+                        onFinish = { showOnboarding = false }
+                    )
                 } else {
                     Scaffold(
                         bottomBar = {
@@ -92,10 +109,18 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             composable(Screen.Dungeon.route) {
-                                DungeonScreen()
+                                val dungeonViewModel: DungeonViewModel = viewModel(
+                                    factory = object : ViewModelProvider.Factory {
+                                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                            return DungeonViewModel(repository) as T
+                                        }
+                                    }
+                                )
+                                DungeonScreen(viewModel = dungeonViewModel)
                             }
                             composable(Screen.Quests.route) {
-                                QuestsScreen(quests = SeedData.getInitialQuests())
+                                // For simplicity, QuestsScreen still shows all, we could use ViewModel here too
+                                QuestsScreen(quests = emptyList()) 
                             }
                             composable(Screen.Progress.route) {
                                 ProgressScreen()
