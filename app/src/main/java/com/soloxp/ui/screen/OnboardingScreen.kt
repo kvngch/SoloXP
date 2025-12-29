@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,12 +29,12 @@ fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingViewModel = view
     var step by remember { mutableIntStateOf(1) }
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DeepBlack)
-            .padding(24.dp)
-    ) {
+    DarkFantasyBackground {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -62,9 +64,11 @@ fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingViewModel = view
             }
         }
 
+        val haptic = LocalHapticFeedback.current
         ActionButton(
             text = if (step < 5) "CONTINUER" else "SCELER MON DESTIN",
             onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 if (step < 5) step++ else {
                     viewModel.completeOnboarding { onFinish() }
                 }
@@ -74,6 +78,7 @@ fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingViewModel = view
                 .padding(bottom = 16.dp)
         )
     }
+}
 }
 
 @Composable
@@ -131,9 +136,13 @@ fun GoalsStep(selected: Set<QuestCategory>, onToggle: (QuestCategory) -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         items(QuestCategory.values()) { category ->
+            val haptic = LocalHapticFeedback.current
             GlassCard(
                 isSelected = selected.contains(category),
-                onClick = { onToggle(category) }
+                onClick = { 
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onToggle(category) 
+                }
             ) {
                 Text(
                     text = category.name.replace("_", " "),
@@ -156,9 +165,13 @@ fun TimeStep(currentTime: Int, onTimeChange: (Int) -> Unit) {
     val options = listOf(5, 15, 30, 60)
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         options.forEach { minutes ->
+            val haptic = LocalHapticFeedback.current
             GlassCard(
                 isSelected = currentTime == minutes,
-                onClick = { onTimeChange(minutes) },
+                onClick = { 
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onTimeChange(minutes) 
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(

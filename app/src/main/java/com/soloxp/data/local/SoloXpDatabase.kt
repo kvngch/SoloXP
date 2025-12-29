@@ -5,6 +5,9 @@ import com.soloxp.data.local.entity.QuestEntity
 import com.soloxp.data.local.entity.UserProfileEntity
 import kotlinx.coroutines.flow.Flow
 
+import com.soloxp.data.local.entity.ItemEntity
+import com.soloxp.data.local.dao.ItemDao
+
 @Dao
 interface SoloXpDao {
     @Query("SELECT * FROM quests ORDER BY createdAt DESC")
@@ -20,7 +23,8 @@ interface SoloXpDao {
     suspend fun updateUserProfile(profile: UserProfileEntity)
 }
 
-@Database(entities = [QuestEntity::class, UserProfileEntity::class], version = 1)
+@Database(entities = [QuestEntity::class, UserProfileEntity::class, ItemEntity::class], version = 2)
 abstract class SoloXpDatabase : RoomDatabase() {
     abstract fun dao(): SoloXpDao
+    abstract fun itemDao(): ItemDao
 }

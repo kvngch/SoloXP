@@ -14,6 +14,6 @@ class SoloXpApplication : Application() {
     }
     
     val repository: SoloXpRepository by lazy {
-        SoloXpRepositoryImpl(database.dao())
+        SoloXpRepositoryImpl(database.dao(), database.itemDao())
     }
 }

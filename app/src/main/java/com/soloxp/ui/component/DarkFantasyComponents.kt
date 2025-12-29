@@ -1,7 +1,7 @@
 package com.soloxp.ui.component
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +26,45 @@ val NeonCyan = Color(0xFF00E5FF)
 val NeonGold = Color(0xFFFFD700)
 val DarkGrey = Color(0xFF121214)
 val DeepBlack = Color(0xFF0A0A0B)
+
+@Composable
+fun DarkFantasyBackground(content: @Composable BoxScope.() -> Unit) {
+    val infiniteTransition = rememberInfiniteTransition(label = "embers")
+    
+    val emberY1 by infiniteTransition.animateFloat(
+        initialValue = 1000f,
+        targetValue = -100f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(15000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ember1"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color.Black, DeepBlack)
+                )
+            )
+    ) {
+        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                color = Color.Red.copy(alpha = 0.05f),
+                radius = 4f,
+                center = androidx.compose.ui.geometry.Offset(size.width * 0.2f, emberY1 % size.height)
+            )
+            drawCircle(
+                color = NeonCyan.copy(alpha = 0.03f),
+                radius = 6f,
+                center = androidx.compose.ui.geometry.Offset(size.width * 0.7f, (emberY1 * 0.8f) % size.height)
+            )
+        }
+        content()
+    }
+}
 
 @Composable
 fun GlassCard(

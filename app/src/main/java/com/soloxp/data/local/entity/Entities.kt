@@ -28,3 +28,15 @@ data class UserProfileEntity(
     val fireCharges: Int,
     val preferredTimePerDay: Int
 )
+
+@Entity(tableName = "items")
+data class ItemEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val description: String,
+    val rarity: String,
+    val type: String,
+    val icon: String,
+    val quantity: Int,
+    val addedAt: Long
+)

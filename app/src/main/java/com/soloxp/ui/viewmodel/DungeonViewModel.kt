@@ -72,6 +72,32 @@ class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
 
             repository.saveUserProfile(updatedProfile)
             repository.updateQuest(quest.copy(isCompleted = true))
+
+            // Generate loot
+            com.soloxp.ui.viewmodel.util.LootGenerator.generateLoot(quest.difficulty)?.let { loot ->
+                repository.saveItem(loot)
+            }
+        }
+    }
+
+    fun rerollQuests() {
+        viewModelScope.launch {
+            val profile = _uiState.value.userProfile
+            if (profile.fireCharges > 0) {
+                // Reduced charges
+                val updatedProfile = profile.copy(fireCharges = profile.fireCharges - 1)
+                repository.saveUserProfile(updatedProfile)
+                
+                // Fetch all quests to shuffle
+                val allQuests = repository.getQuests().first()
+                val filtered = filterQuestsByEnergy(allQuests, updatedProfile.energyLevel)
+                
+                // Update state with new selection
+                _uiState.value = _uiState.value.copy(
+                    userProfile = updatedProfile,
+                    dailyQuests = filtered.shuffled().take(3)
+                )
+            }
         }
     }
 

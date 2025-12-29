@@ -5,6 +5,21 @@ enum class Difficulty { MICRO, MINI, STANDARD, BOSS }
 enum class QuestCategory { HEALTH, SPORT, SLEEP, SOCIAL, MIND, DISCIPLINE }
 enum class Tone { CALM, EPIC }
 
+
+enum class Rarity { COMMON, RARE, LEGENDARY }
+enum class ItemType { CONSUMABLE, ARTIFACT }
+
+data class Item(
+    val id: String,
+    val name: String,
+    val description: String,
+    val rarity: Rarity,
+    val type: ItemType,
+    val icon: String, // Resource name or emoji
+    val quantity: Int = 1,
+    val addedAt: Long = System.currentTimeMillis()
+)
+
 data class UserProfile(
     val id: String = "local_user",
     val tone: Tone = Tone.EPIC,

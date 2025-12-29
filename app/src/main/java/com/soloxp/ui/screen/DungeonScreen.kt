@@ -15,14 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.soloxp.domain.model.Quest
-import com.soloxp.ui.component.DeepBlack
-import com.soloxp.ui.component.NeonCyan
-import com.soloxp.ui.component.NeonGold
+import com.soloxp.ui.component.*
 import com.soloxp.ui.viewmodel.DungeonViewModel
 
 @Composable
@@ -42,41 +42,41 @@ fun DungeonScreen(
         label = "xpProgress"
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(bgColor)
-            .padding(16.dp)
-    ) {
-        // HUD
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    DarkFantasyBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Column {
-                Text(
-                    text = "RANG ${profile.rank}", 
-                    color = NeonGold, 
-                    fontWeight = FontWeight.Bold, 
-                    fontSize = 20.sp,
-                    letterSpacing = 2.sp
-                )
-                LinearProgressIndicator(
-                    progress = animatedProgress,
-                    color = neonCyan,
-                    trackColor = Color.White.copy(alpha = 0.1f),
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(8.dp)
-                )
-                Text(
-                    text = "${profile.xpTotal} / ${uiState.xpToNextLevel} XP",
-                    color = Color.Gray,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
+            // HUD
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "RANG ${profile.rank}", 
+                        color = NeonGold, 
+                        fontWeight = FontWeight.Bold, 
+                        fontSize = 20.sp,
+                        letterSpacing = 2.sp
+                    )
+                    LinearProgressIndicator(
+                        progress = animatedProgress,
+                        color = neonCyan,
+                        trackColor = Color.White.copy(alpha = 0.1f),
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(8.dp)
+                    )
+                    Text(
+                        text = "${profile.xpTotal} / ${uiState.xpToNextLevel} XP",
+                        color = Color.Gray,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             Column(horizontalAlignment = Alignment.End) {
                 Text(text = "ÉNERGIE", color = Color.Gray, fontSize = 12.sp)
                 Text(
@@ -97,7 +97,7 @@ fun DungeonScreen(
                 .height(180.dp)
                 .border(2.dp, Brush.verticalGradient(listOf(neonCyan, Color.Transparent)), RoundedCornerShape(16.dp))
                 .background(Color.White.copy(alpha = 0.02f), RoundedCornerShape(16.dp))
-                .padding(2.dp),
+                .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -113,6 +113,29 @@ fun DungeonScreen(
                     color = Color.White.copy(alpha = 0.5f),
                     fontSize = 12.sp
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Re-roll Button
+                val haptic = LocalHapticFeedback.current
+                Button(
+                    onClick = { 
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        viewModel.rerollQuests() 
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    border = BorderStroke(1.dp, Color.Red.copy(alpha = 0.3f)),
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = profile.fireCharges > 0,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "PURGER (${profile.fireCharges} 🔥)", 
+                        color = if (profile.fireCharges > 0) Color.Red else Color.Gray,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
@@ -142,6 +165,7 @@ fun DungeonScreen(
                     )
                 }
             }
+        }
         }
     }
 }
@@ -196,8 +220,12 @@ fun QuestCard(
             }
             
             if (!quest.isCompleted) {
+                val haptic = LocalHapticFeedback.current
                 Button(
-                    onClick = onComplete,
+                    onClick = { 
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onComplete() 
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = neonColor),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     shape = RoundedCornerShape(8.dp),
