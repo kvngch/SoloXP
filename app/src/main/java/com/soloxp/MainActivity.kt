@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             composable(Screen.Dungeon.route) {
-                                DungeonScreen(quests = SeedData.getInitialQuests().take(3))
+                                DungeonScreen()
                             }
                             composable(Screen.Quests.route) {
                                 QuestsScreen(quests = SeedData.getInitialQuests())

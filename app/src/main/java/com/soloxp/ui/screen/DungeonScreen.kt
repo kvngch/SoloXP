@@ -1,5 +1,8 @@
 package com.soloxp.ui.screen
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -15,18 +18,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.soloxp.domain.model.Quest
+import com.soloxp.ui.component.DeepBlack
+import com.soloxp.ui.component.NeonCyan
+import com.soloxp.ui.component.NeonGold
+import com.soloxp.ui.viewmodel.DungeonViewModel
 
 @Composable
 fun DungeonScreen(
-    quests: List<Quest>,
-    rank: String = "E",
-    xpProgress: Float = 0.3f,
-    energyLevel: Int = 5
+    viewModel: DungeonViewModel = viewModel()
 ) {
-    val bgColor = Color(0xFF0A0A0B)
-    val neonCyan = Color(0xFF00E5FF)
+    val uiState by viewModel.uiState.collectAsState()
+    val bgColor = DeepBlack
+    val neonCyan = NeonCyan
     
+    val profile = uiState.userProfile
+    val xpProgress = profile.xpTotal.toFloat() / uiState.xpToNextLevel.toFloat()
+    
+    // Animate the progress bar
+    val animatedProgress by animateFloatAsState(
+        targetValue = xpProgress.coerceIn(0f, 1f),
+        label = "xpProgress"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,22 +55,35 @@ fun DungeonScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = "RANG $rank", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(
+                    text = "RANG ${profile.rank}", 
+                    color = NeonGold, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 20.sp,
+                    letterSpacing = 2.sp
+                )
                 LinearProgressIndicator(
-                    progress = xpProgress,
+                    progress = animatedProgress,
                     color = neonCyan,
-                    trackColor = Color.DarkGray,
-                    modifier = Modifier.width(100.dp).height(8.dp)
+                    trackColor = Color.White.copy(alpha = 0.1f),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(8.dp)
+                )
+                Text(
+                    text = "${profile.xpTotal} / ${uiState.xpToNextLevel} XP",
+                    color = Color.Gray,
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(text = "ÉNERGIE", color = Color.Gray, fontSize = 12.sp)
-                Slider(
-                    value = energyLevel.toFloat(),
-                    onValueChange = {},
-                    valueRange = 0f..10f,
-                    modifier = Modifier.width(120.dp),
-                    colors = SliderDefaults.colors(thumbColor = neonCyan, activeTrackColor = neonCyan)
+                Text(
+                    text = "${profile.energyLevel}/10", 
+                    color = Color.White, 
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp
                 )
             }
         }
@@ -66,8 +94,9 @@ fun DungeonScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .border(2.dp, Brush.linearGradient(listOf(neonCyan, Color.Transparent)), RoundedCornerShape(16.dp))
+                .height(180.dp)
+                .border(2.dp, Brush.verticalGradient(listOf(neonCyan, Color.Transparent)), RoundedCornerShape(16.dp))
+                .background(Color.White.copy(alpha = 0.02f), RoundedCornerShape(16.dp))
                 .padding(2.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -75,33 +104,63 @@ fun DungeonScreen(
                 Text(
                     text = "DONJON DU JOUR",
                     color = neonCyan,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.ExtraBold
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 4.sp
                 )
-                Text(text = "PORTAIL OUVERT", color = Color.White.copy(alpha = 0.7f))
+                Text(
+                    text = "PORTAIL OUVERT", 
+                    color = Color.White.copy(alpha = 0.5f),
+                    fontSize = 12.sp
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text(text = "QUÊTES RECOMMANDÉES", color = Color.White, fontWeight = FontWeight.Bold)
+        Text(
+            text = "QUÊTES CONSEILLÉES", 
+            color = Color.White, 
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 14.sp
+        )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(quests) { quest ->
-                QuestCard(quest = quest, neonColor = neonCyan)
+        if (uiState.isLoading) {
+            CircularProgressIndicator(color = neonCyan, modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(uiState.dailyQuests) { quest ->
+                    QuestCard(
+                        quest = quest, 
+                        neonColor = if (quest.isCompleted) Color.Gray else neonCyan,
+                        onComplete = { viewModel.completeQuest(quest) }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun QuestCard(quest: Quest, neonColor: Color) {
+fun QuestCard(
+    quest: Quest, 
+    neonColor: Color,
+    onComplete: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1C)),
-        shape = RoundedCornerShape(12.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF121214)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = if (quest.isCompleted) null else BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -109,25 +168,55 @@ fun QuestCard(quest: Quest, neonColor: Color) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(44.dp)
                     .background(neonColor.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                    .border(1.dp, neonColor, RoundedCornerShape(8.dp)),
+                    .border(1.dp, neonColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                // Placeholder for category icon
+                Text(
+                    text = quest.category.name.take(1), 
+                    color = neonColor, 
+                    fontWeight = FontWeight.Black
+                )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = quest.title, color = Color.White, fontWeight = FontWeight.Bold)
-                Text(text = "${quest.durationMinutes} min • +${quest.xpReward} XP", color = Color.Gray, fontSize = 12.sp)
+                Text(
+                    text = quest.title, 
+                    color = if (quest.isCompleted) Color.Gray else Color.White, 
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = "${quest.durationMinutes} MIN • +${quest.xpReward} XP", 
+                    color = Color.Gray, 
+                    fontSize = 11.sp,
+                    letterSpacing = 1.sp
+                )
             }
-            Button(
-                onClick = { /* TODO */ },
-                colors = ButtonDefaults.buttonColors(containerColor = neonColor),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(text = "DÉMARRER", color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            
+            if (!quest.isCompleted) {
+                Button(
+                    onClick = onComplete,
+                    colors = ButtonDefaults.buttonColors(containerColor = neonColor),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Text(
+                        text = "FIXER", 
+                        color = Color.Black, 
+                        fontSize = 11.sp, 
+                        fontWeight = FontWeight.Black
+                    )
+                }
+            } else {
+                Text(
+                    text = "ACCOMPLI", 
+                    color = Color.Gray, 
+                    fontSize = 11.sp, 
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

@@ -30,7 +30,11 @@ fun QuestsScreen(quests: List<Quest>) {
         
         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(quests) { quest ->
-                QuestCard(quest = quest, neonColor = NeonCyan)
+                QuestCard(
+                    quest = quest, 
+                    neonColor = NeonCyan,
+                    onComplete = {} // Placeholder for list view
+                )
             }
         }
     }
