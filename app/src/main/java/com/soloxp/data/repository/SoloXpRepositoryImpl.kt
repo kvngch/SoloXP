@@ -69,6 +69,7 @@ fun QuestEntity.toDomain() = Quest(
     durationMinutes = durationMinutes,
     xpReward = xpReward,
     instructions = instructions,
+    successCriteria = successCriteria,
     isCompleted = isCompleted,
     createdAt = createdAt
 )
@@ -81,6 +82,7 @@ fun Quest.toEntity() = QuestEntity(
     durationMinutes = durationMinutes,
     xpReward = xpReward,
     instructions = instructions,
+    successCriteria = successCriteria,
     isCompleted = isCompleted,
     createdAt = createdAt
 )

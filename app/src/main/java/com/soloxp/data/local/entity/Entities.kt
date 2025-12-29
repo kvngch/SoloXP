@@ -14,6 +14,7 @@ data class QuestEntity(
     val durationMinutes: Int,
     val xpReward: Int,
     val instructions: String,
+    val successCriteria: String,
     val isCompleted: Boolean,
     val createdAt: Long
 )

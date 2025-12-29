@@ -23,8 +23,19 @@ interface SoloXpDao {
     suspend fun updateUserProfile(profile: UserProfileEntity)
 }
 
-@Database(entities = [QuestEntity::class, UserProfileEntity::class, ItemEntity::class], version = 2)
+@Database(
+    entities = [QuestEntity::class, UserProfileEntity::class, ItemEntity::class],
+    version = 3
+)
 abstract class SoloXpDatabase : RoomDatabase() {
     abstract fun dao(): SoloXpDao
     abstract fun itemDao(): ItemDao
+
+    companion object {
+        val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE quests ADD COLUMN successCriteria TEXT NOT NULL DEFAULT ''")
+            }
+        }
+    }
 }

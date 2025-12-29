@@ -65,18 +65,40 @@ fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingViewModel = view
         }
 
         val haptic = LocalHapticFeedback.current
-        ActionButton(
-            text = if (step < 5) "CONTINUER" else "SCELER MON DESTIN",
-            onClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                if (step < 5) step++ else {
-                    viewModel.completeOnboarding { onFinish() }
-                }
-            },
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        )
+                .padding(bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ActionButton(
+                text = if (step < 5) "CONTINUER" else "SCELER MON DESTIN",
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    if (step < 5) step++ else {
+                        viewModel.completeOnboarding { onFinish() }
+                    }
+                }
+            )
+
+            if (step > 1) {
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        step--
+                    }
+                ) {
+                    Text(
+                        text = "RETOUR",
+                        color = Color.White.copy(alpha = 0.5f),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
+                }
+            }
+        }
     }
 }
 }

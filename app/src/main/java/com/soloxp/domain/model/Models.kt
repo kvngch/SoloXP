@@ -38,6 +38,7 @@ data class Quest(
     val durationMinutes: Int,
     val xpReward: Int,
     val instructions: String,
+    val successCriteria: String,
     val isCompleted: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )

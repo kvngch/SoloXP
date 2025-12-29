@@ -9,7 +9,7 @@ import com.soloxp.data.repository.SoloXpRepositoryImpl
 class SoloXpApplication : Application() {
     val database: SoloXpDatabase by lazy {
         Room.databaseBuilder(this, SoloXpDatabase::class.java, "soloxp_database")
-            .fallbackToDestructiveMigration()
+            .addMigrations(SoloXpDatabase.MIGRATION_2_3)
             .build()
     }
     

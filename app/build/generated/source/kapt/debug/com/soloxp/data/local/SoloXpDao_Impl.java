@@ -42,7 +42,7 @@ public final class SoloXpDao_Impl implements SoloXpDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `quests` (`id`,`title`,`category`,`difficulty`,`durationMinutes`,`xpReward`,`instructions`,`isCompleted`,`createdAt`) VALUES (?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `quests` (`id`,`title`,`category`,`difficulty`,`durationMinutes`,`xpReward`,`instructions`,`successCriteria`,`isCompleted`,`createdAt`) VALUES (?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -75,9 +75,14 @@ public final class SoloXpDao_Impl implements SoloXpDao {
         } else {
           statement.bindString(7, entity.getInstructions());
         }
+        if (entity.getSuccessCriteria() == null) {
+          statement.bindNull(8);
+        } else {
+          statement.bindString(8, entity.getSuccessCriteria());
+        }
         final int _tmp = entity.isCompleted() ? 1 : 0;
-        statement.bindLong(8, _tmp);
-        statement.bindLong(9, entity.getCreatedAt());
+        statement.bindLong(9, _tmp);
+        statement.bindLong(10, entity.getCreatedAt());
       }
     };
     this.__insertionAdapterOfUserProfileEntity = new EntityInsertionAdapter<UserProfileEntity>(__db) {
@@ -114,7 +119,7 @@ public final class SoloXpDao_Impl implements SoloXpDao {
   }
 
   @Override
-  public Object insertQuest(final QuestEntity quest, final Continuation<? super Unit> arg1) {
+  public Object insertQuest(final QuestEntity quest, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -128,12 +133,12 @@ public final class SoloXpDao_Impl implements SoloXpDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object updateUserProfile(final UserProfileEntity profile,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -147,7 +152,7 @@ public final class SoloXpDao_Impl implements SoloXpDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -167,6 +172,7 @@ public final class SoloXpDao_Impl implements SoloXpDao {
           final int _cursorIndexOfDurationMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "durationMinutes");
           final int _cursorIndexOfXpReward = CursorUtil.getColumnIndexOrThrow(_cursor, "xpReward");
           final int _cursorIndexOfInstructions = CursorUtil.getColumnIndexOrThrow(_cursor, "instructions");
+          final int _cursorIndexOfSuccessCriteria = CursorUtil.getColumnIndexOrThrow(_cursor, "successCriteria");
           final int _cursorIndexOfIsCompleted = CursorUtil.getColumnIndexOrThrow(_cursor, "isCompleted");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final List<QuestEntity> _result = new ArrayList<QuestEntity>(_cursor.getCount());
@@ -206,13 +212,19 @@ public final class SoloXpDao_Impl implements SoloXpDao {
             } else {
               _tmpInstructions = _cursor.getString(_cursorIndexOfInstructions);
             }
+            final String _tmpSuccessCriteria;
+            if (_cursor.isNull(_cursorIndexOfSuccessCriteria)) {
+              _tmpSuccessCriteria = null;
+            } else {
+              _tmpSuccessCriteria = _cursor.getString(_cursorIndexOfSuccessCriteria);
+            }
             final boolean _tmpIsCompleted;
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsCompleted);
             _tmpIsCompleted = _tmp != 0;
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _item = new QuestEntity(_tmpId,_tmpTitle,_tmpCategory,_tmpDifficulty,_tmpDurationMinutes,_tmpXpReward,_tmpInstructions,_tmpIsCompleted,_tmpCreatedAt);
+            _item = new QuestEntity(_tmpId,_tmpTitle,_tmpCategory,_tmpDifficulty,_tmpDurationMinutes,_tmpXpReward,_tmpInstructions,_tmpSuccessCriteria,_tmpIsCompleted,_tmpCreatedAt);
             _result.add(_item);
           }
           return _result;
