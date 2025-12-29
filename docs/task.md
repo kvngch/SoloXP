@@ -1,0 +1,77 @@
+# SoloXP Implementation Task
+
+- [x] Project Initialization & Planning
+    - [x] Create `task.md` [x]
+    - [x] Create `implementation_plan.md` [x]
+- [x] UI Design & Design System
+    - [x] Define Color Palette & Typography [x]
+    - [x] Generate Wireframes for Core Screens [x]
+- [x] Architecture & Data Modeling
+    - [x] Define Data Models (User, Quest, Dungeon, Progress) [x]
+    - [x] Design Room Database Schema [x]
+- [x] Core Infrastructure Implementation
+    - [x] Set up Project Structure (MVVM + Clean Architecture) [x]
+    - [x] Implement Room Database & DataStore [x]
+    - [x] Set up Dependency Injection [x]
+- [x] UI Shell & Navigation
+    - [x] Implement Bottom Navigation Bar [x]
+    - [x] Setup NavHost [x]
+- [x] Screen Implementation
+    - [x] Onboarding Flow (6 Screens) [x]
+    - [x] Dungeon (Home) Screen [x]
+    - [x] Quests Screen [x]
+    - [x] Progress Screen [x]
+    - [x] Inventory & Profile Screens [x]
+    - [x] Support Center (Safety) [x]
+- [x] Logic & Algorithms
+    - [x] Difficulty Adjustment Algorithm [x]
+    - [x] XP & Leveling Logic [x]
+    - [x] Seed Data Generation (150 Quests) [x]
+- [x] Build Preparation
+    - [x] Create Gradle build files [x]
+    - [x] Define Android Manifest & MainActivity [x]
+- [x] APK Building
+    - [x] Resolve Environment & Gradle issues [x]
+    - [x] Resolve Resource linking (AAPT2) issues [x]
+    - [x] Generate final debug APK [x]
+- [x] Onboarding Refinement
+    - [x] Implement `OnboardingViewModel` [x]
+    - [x] Create 'Dark Fantasy' custom components (Glassmorphism cards) [x]
+    - [x] Add selection animations & haptics [x]
+    - [x] Implement data persistence for onboarding choices [x]
+    - [x] Add 'Back' navigation for checking choices [x]
+- [x] Deployment & Backup
+    - [x] Configure Git & .gitignore [x]
+    - [x] Push to GitHub (kvngch/SoloXP) [x]
+    - [x] Setup GitHub Actions for Auto-Release [x]
+- [x] Dungeon Dynamizing
+    - [x] Implement `DungeonViewModel` for logic & state
+    - [x] Add energy-based quest filtering logic
+    - [x] Implement XP gain animation & Rank progression
+    - [x] Connect "Complete" button to DB & HUD
+- [x] Polish & Immersion (v0.005)
+    - [x] Auto-skip onboarding if profile exists
+    - [x] Implement Re-roll logic (Fire Charges)
+    - [x] Connect Progress & Profile to Room
+    - [x] Add Haptic feedback & VFX
+- [x] Verification & Polish
+    - [x] Unit Tests for Core Logic [x]
+    - [x] UI Smoke Tests [x]
+    - [x] Final Walkthrough [x]
+- [x] Phase 6: L'Arsenal (Inventory System)
+    - [x] Define item models & persistence
+    - [x] Implement Loot Generator logic
+    - [x] Create `InventoryViewModel`
+    - [x] Overhaul `InventoryScreen` with rarity-based UI
+    - [x] Implement item consumption logic
+- [x] Phase 7: Awakening (Progress & Artifacts)
+    - [x] Create `ProgressViewModel` with live stats
+    - [x] Connect `ProgressScreen` to DB
+    - [x] Implement Passive Artifact Bonuses (XP Boost)
+    - [x] Display Active Effects in UI
+    - [x] Release v0.007
+- [x] Phase 8: Detailed Quest View (Consigne & Succès)
+    - [x] Update Quest Data Model & Entity (v3)
+    - [x] Update SeedData with Success Criteria
+    - [x] Create `QuestDetailSheet` UI
+    - [x] Release v0.008
