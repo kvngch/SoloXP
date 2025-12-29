@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "com.soloxp.app-merged_res-64:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.soloxp.app-main-66:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.soloxp.app-merged_res-64:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.soloxp.app-main-66:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.soloxp.app-merged_res-64:/mipmap_ic_launcher.xml.flat",
+        "source": "com.soloxp.app-main-66:/mipmap/ic_launcher.xml"
+    },
+    {
+        "merged": "com.soloxp.app-merged_res-64:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.soloxp.app-main-66:/mipmap/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.soloxp.app-merged_res-64:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.soloxp.app-main-66:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]
