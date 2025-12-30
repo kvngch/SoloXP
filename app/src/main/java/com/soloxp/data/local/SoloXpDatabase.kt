@@ -25,7 +25,7 @@ interface SoloXpDao {
 
 @Database(
     entities = [QuestEntity::class, UserProfileEntity::class, ItemEntity::class],
-    version = 3
+    version = 5
 )
 abstract class SoloXpDatabase : RoomDatabase() {
     abstract fun dao(): SoloXpDao
@@ -35,6 +35,25 @@ abstract class SoloXpDatabase : RoomDatabase() {
         val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
             override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE quests ADD COLUMN successCriteria TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
+        val MIGRATION_3_4 = object : androidx.room.migration.Migration(3, 4) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN activeTitle TEXT NOT NULL DEFAULT 'NEOPHYTE'")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN unlockedTitles TEXT NOT NULL DEFAULT 'NEOPHYTE'")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN skillPoints INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN unlockedSkills TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
+        val MIGRATION_4_5 = object : androidx.room.migration.Migration(4, 5) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN currentStreak INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN longestStreak INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN lastQuestCompletedDate INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN streakSaverUsed INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_profile ADD COLUMN dailyRitualCompletedDate INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

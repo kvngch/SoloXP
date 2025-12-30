@@ -35,14 +35,14 @@ public final class SoloXpDatabase_Impl extends SoloXpDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `quests` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `category` TEXT NOT NULL, `difficulty` TEXT NOT NULL, `durationMinutes` INTEGER NOT NULL, `xpReward` INTEGER NOT NULL, `instructions` TEXT NOT NULL, `successCriteria` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` TEXT NOT NULL, `tone` TEXT NOT NULL, `energyLevel` INTEGER NOT NULL, `xpTotal` INTEGER NOT NULL, `rank` TEXT NOT NULL, `fireCharges` INTEGER NOT NULL, `preferredTimePerDay` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` TEXT NOT NULL, `tone` TEXT NOT NULL, `energyLevel` INTEGER NOT NULL, `xpTotal` INTEGER NOT NULL, `rank` TEXT NOT NULL, `fireCharges` INTEGER NOT NULL, `preferredTimePerDay` INTEGER NOT NULL, `activeTitle` TEXT NOT NULL, `unlockedTitles` TEXT NOT NULL, `skillPoints` INTEGER NOT NULL, `unlockedSkills` TEXT NOT NULL, `currentStreak` INTEGER NOT NULL, `longestStreak` INTEGER NOT NULL, `lastQuestCompletedDate` INTEGER NOT NULL, `streakSaverUsed` INTEGER NOT NULL, `dailyRitualCompletedDate` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `items` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `rarity` TEXT NOT NULL, `type` TEXT NOT NULL, `icon` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '012dad848ce56142709823dcdaeb5b59')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c5d59a06fa8ba52e10070a7fda18458a')");
       }
 
       @Override
@@ -113,7 +113,7 @@ public final class SoloXpDatabase_Impl extends SoloXpDatabase {
                   + " Expected:\n" + _infoQuests + "\n"
                   + " Found:\n" + _existingQuests);
         }
-        final HashMap<String, TableInfo.Column> _columnsUserProfile = new HashMap<String, TableInfo.Column>(7);
+        final HashMap<String, TableInfo.Column> _columnsUserProfile = new HashMap<String, TableInfo.Column>(16);
         _columnsUserProfile.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("tone", new TableInfo.Column("tone", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("energyLevel", new TableInfo.Column("energyLevel", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -121,6 +121,15 @@ public final class SoloXpDatabase_Impl extends SoloXpDatabase {
         _columnsUserProfile.put("rank", new TableInfo.Column("rank", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("fireCharges", new TableInfo.Column("fireCharges", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("preferredTimePerDay", new TableInfo.Column("preferredTimePerDay", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("activeTitle", new TableInfo.Column("activeTitle", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("unlockedTitles", new TableInfo.Column("unlockedTitles", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("skillPoints", new TableInfo.Column("skillPoints", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("unlockedSkills", new TableInfo.Column("unlockedSkills", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("currentStreak", new TableInfo.Column("currentStreak", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("longestStreak", new TableInfo.Column("longestStreak", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("lastQuestCompletedDate", new TableInfo.Column("lastQuestCompletedDate", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("streakSaverUsed", new TableInfo.Column("streakSaverUsed", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("dailyRitualCompletedDate", new TableInfo.Column("dailyRitualCompletedDate", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysUserProfile = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesUserProfile = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoUserProfile = new TableInfo("user_profile", _columnsUserProfile, _foreignKeysUserProfile, _indicesUserProfile);
@@ -150,7 +159,7 @@ public final class SoloXpDatabase_Impl extends SoloXpDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "012dad848ce56142709823dcdaeb5b59", "c0131f4d3aabda7db32186cff2949502");
+    }, "c5d59a06fa8ba52e10070a7fda18458a", "4ab14d4d3e6544742800b6bad9842b39");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

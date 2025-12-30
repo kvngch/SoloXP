@@ -25,6 +25,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.soloxp.domain.model.Quest
 import com.soloxp.ui.component.*
 import com.soloxp.ui.viewmodel.DungeonViewModel
+import com.soloxp.domain.logic.RitualGenerator
+import com.soloxp.domain.logic.StreakManager
+import com.soloxp.domain.logic.StreakStatus
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +93,26 @@ fun DungeonScreen(
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
+                    // Streak Badge
+                    if (profile.currentStreak > 0) {
+                        val streakBonus = (StreakManager.calculateStreakBonus(profile.currentStreak) * 100).toInt()
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "🔥 ${profile.currentStreak}",
+                                color = Color(0xFFFF6B35),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "+$streakBonus%",
+                                color = NeonCyan,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                     Text(text = "ÉNERGIE", color = Color.Gray, fontSize = 12.sp)
                     Text(
                         text = "${profile.energyLevel}/10", 
@@ -151,6 +175,18 @@ fun DungeonScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // Daily Ritual Card
+            val dailyRitual = RitualGenerator.generateDailyRitual(
+                lastCompletedDate = profile.dailyRitualCompletedDate
+            )
+            if (!dailyRitual.isCompleted) {
+                DailyRitualCard(
+                    ritual = dailyRitual,
+                    onComplete = { viewModel.completeQuest(dailyRitual.quest) }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             Text(
                 text = "QUÊTES CONSEILLÉES", 
@@ -371,6 +407,129 @@ fun QuestDetailSheet(quest: Quest, onComplete: () -> Unit) {
                     color = Color.Black,
                     fontWeight = FontWeight.Black,
                     fontSize = 16.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DailyRitualCard(
+    ritual: com.soloxp.domain.logic.DailyRitual,
+    onComplete: () -> Unit
+) {
+    val timeRemaining = RitualGenerator.getTimeUntilExpiration(ritual)
+    val hoursLeft = TimeUnit.MILLISECONDS.toHours(timeRemaining)
+    val minutesLeft = TimeUnit.MILLISECONDS.toMinutes(timeRemaining) % 60
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A0E2E) // Deep purple
+        ),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(2.dp, Color(0xFF9D4EDD)) // Purple glow
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "👑",
+                        fontSize = 24.sp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text = "RITUEL QUOTIDIEN",
+                            color = Color(0xFF9D4EDD),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        )
+                        if (ritual.firstClearBonusActive) {
+                            Text(
+                                text = "FIRST CLEAR BONUS",
+                                color = NeonGold,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        }
+                    }
+                }
+                
+                Text(
+                    text = "${hoursLeft}h${minutesLeft}m",
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Text(
+                text = ritual.quest.title,
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row {
+                Text(
+                    text = "${ritual.quest.durationMinutes} MIN",
+                    color = Color.Gray,
+                    fontSize = 11.sp
+                )
+                Text(
+                    text = " • ",
+                    color = Color.Gray,
+                    fontSize = 11.sp
+                )
+                Text(
+                    text = "+${ritual.quest.xpReward} XP",
+                    color = NeonCyan,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = " • ",
+                    color = Color.Gray,
+                    fontSize = 11.sp
+                )
+                Text(
+                    text = "LOOT RARE",
+                    color = Color(0xFFFFD700),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            val haptic = LocalHapticFeedback.current
+            Button(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onComplete()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9D4EDD)),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "ACCOMPLIR LE RITUEL",
+                    color = Color.White,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 14.sp
                 )
             }
         }

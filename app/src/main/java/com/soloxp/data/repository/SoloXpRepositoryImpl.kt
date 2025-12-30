@@ -94,7 +94,16 @@ fun UserProfileEntity.toDomain() = UserProfile(
     xpTotal = xpTotal,
     rank = Rank.valueOf(rank),
     fireCharges = fireCharges,
-    preferredTimePerDay = preferredTimePerDay
+    preferredTimePerDay = preferredTimePerDay,
+    activeTitle = try { Title.valueOf(activeTitle) } catch (e: Exception) { Title.NEOPHYTE },
+    unlockedTitles = if (unlockedTitles.isBlank()) listOf(Title.NEOPHYTE) else unlockedTitles.split(",").mapNotNull { try { Title.valueOf(it) } catch (e: Exception) { null } },
+    skillPoints = skillPoints,
+    unlockedSkills = if (unlockedSkills.isBlank()) emptyList() else unlockedSkills.split(",").mapNotNull { try { Skill.valueOf(it) } catch (e: Exception) { null } },
+    currentStreak = currentStreak,
+    longestStreak = longestStreak,
+    lastQuestCompletedDate = lastQuestCompletedDate,
+    streakSaverUsed = streakSaverUsed == 1,
+    dailyRitualCompletedDate = dailyRitualCompletedDate
 )
 
 fun UserProfile.toEntity() = UserProfileEntity(
@@ -104,7 +113,16 @@ fun UserProfile.toEntity() = UserProfileEntity(
     xpTotal = xpTotal,
     rank = rank.name,
     fireCharges = fireCharges,
-    preferredTimePerDay = preferredTimePerDay
+    preferredTimePerDay = preferredTimePerDay,
+    activeTitle = activeTitle.name,
+    unlockedTitles = unlockedTitles.joinToString(",") { it.name },
+    skillPoints = skillPoints,
+    unlockedSkills = unlockedSkills.joinToString(",") { it.name },
+    currentStreak = currentStreak,
+    longestStreak = longestStreak,
+    lastQuestCompletedDate = lastQuestCompletedDate,
+    streakSaverUsed = if (streakSaverUsed) 1 else 0,
+    dailyRitualCompletedDate = dailyRitualCompletedDate
 )
 
 fun ItemEntity.toDomain() = Item(

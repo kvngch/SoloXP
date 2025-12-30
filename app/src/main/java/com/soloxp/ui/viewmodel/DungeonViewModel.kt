@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.soloxp.data.local.SeedData
 import com.soloxp.data.repository.SoloXpRepository
 import com.soloxp.domain.model.*
+import com.soloxp.domain.logic.StreakManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -56,8 +57,12 @@ class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
     fun completeQuest(quest: Quest) {
         viewModelScope.launch {
             val currentProfile = _uiState.value.userProfile
-            val xpWithBonus = calculateArtifactBonus(quest.xpReward)
-            val newXp = currentProfile.xpTotal + xpWithBonus
+            
+            // Apply streak bonus
+            val streakBonus = StreakManager.calculateStreakBonus(currentProfile.currentStreak)
+            val artifactBonus = calculateArtifactBonus(quest.xpReward)
+            val totalXp = (artifactBonus * (1 + streakBonus)).toInt()
+            val newXp = currentProfile.xpTotal + totalXp
             
             var newRank = currentProfile.rank
             val threshold = _uiState.value.xpToNextLevel
@@ -71,7 +76,10 @@ class DungeonViewModel(private val repository: SoloXpRepository) : ViewModel() {
                 rank = newRank
             )
 
-            repository.saveUserProfile(updatedProfile)
+            // Update streak
+            val profileWithStreak = StreakManager.updateStreakOnQuestComplete(updatedProfile)
+            
+            repository.saveUserProfile(profileWithStreak)
             repository.updateQuest(quest.copy(isCompleted = true))
 
             // Generate loot

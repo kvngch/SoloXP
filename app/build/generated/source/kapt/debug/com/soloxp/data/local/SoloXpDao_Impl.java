@@ -89,7 +89,7 @@ public final class SoloXpDao_Impl implements SoloXpDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `user_profile` (`id`,`tone`,`energyLevel`,`xpTotal`,`rank`,`fireCharges`,`preferredTimePerDay`) VALUES (?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `user_profile` (`id`,`tone`,`energyLevel`,`xpTotal`,`rank`,`fireCharges`,`preferredTimePerDay`,`activeTitle`,`unlockedTitles`,`skillPoints`,`unlockedSkills`,`currentStreak`,`longestStreak`,`lastQuestCompletedDate`,`streakSaverUsed`,`dailyRitualCompletedDate`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -114,6 +114,27 @@ public final class SoloXpDao_Impl implements SoloXpDao {
         }
         statement.bindLong(6, entity.getFireCharges());
         statement.bindLong(7, entity.getPreferredTimePerDay());
+        if (entity.getActiveTitle() == null) {
+          statement.bindNull(8);
+        } else {
+          statement.bindString(8, entity.getActiveTitle());
+        }
+        if (entity.getUnlockedTitles() == null) {
+          statement.bindNull(9);
+        } else {
+          statement.bindString(9, entity.getUnlockedTitles());
+        }
+        statement.bindLong(10, entity.getSkillPoints());
+        if (entity.getUnlockedSkills() == null) {
+          statement.bindNull(11);
+        } else {
+          statement.bindString(11, entity.getUnlockedSkills());
+        }
+        statement.bindLong(12, entity.getCurrentStreak());
+        statement.bindLong(13, entity.getLongestStreak());
+        statement.bindLong(14, entity.getLastQuestCompletedDate());
+        statement.bindLong(15, entity.getStreakSaverUsed());
+        statement.bindLong(16, entity.getDailyRitualCompletedDate());
       }
     };
   }
@@ -257,6 +278,15 @@ public final class SoloXpDao_Impl implements SoloXpDao {
           final int _cursorIndexOfRank = CursorUtil.getColumnIndexOrThrow(_cursor, "rank");
           final int _cursorIndexOfFireCharges = CursorUtil.getColumnIndexOrThrow(_cursor, "fireCharges");
           final int _cursorIndexOfPreferredTimePerDay = CursorUtil.getColumnIndexOrThrow(_cursor, "preferredTimePerDay");
+          final int _cursorIndexOfActiveTitle = CursorUtil.getColumnIndexOrThrow(_cursor, "activeTitle");
+          final int _cursorIndexOfUnlockedTitles = CursorUtil.getColumnIndexOrThrow(_cursor, "unlockedTitles");
+          final int _cursorIndexOfSkillPoints = CursorUtil.getColumnIndexOrThrow(_cursor, "skillPoints");
+          final int _cursorIndexOfUnlockedSkills = CursorUtil.getColumnIndexOrThrow(_cursor, "unlockedSkills");
+          final int _cursorIndexOfCurrentStreak = CursorUtil.getColumnIndexOrThrow(_cursor, "currentStreak");
+          final int _cursorIndexOfLongestStreak = CursorUtil.getColumnIndexOrThrow(_cursor, "longestStreak");
+          final int _cursorIndexOfLastQuestCompletedDate = CursorUtil.getColumnIndexOrThrow(_cursor, "lastQuestCompletedDate");
+          final int _cursorIndexOfStreakSaverUsed = CursorUtil.getColumnIndexOrThrow(_cursor, "streakSaverUsed");
+          final int _cursorIndexOfDailyRitualCompletedDate = CursorUtil.getColumnIndexOrThrow(_cursor, "dailyRitualCompletedDate");
           final UserProfileEntity _result;
           if (_cursor.moveToFirst()) {
             final String _tmpId;
@@ -285,7 +315,37 @@ public final class SoloXpDao_Impl implements SoloXpDao {
             _tmpFireCharges = _cursor.getInt(_cursorIndexOfFireCharges);
             final int _tmpPreferredTimePerDay;
             _tmpPreferredTimePerDay = _cursor.getInt(_cursorIndexOfPreferredTimePerDay);
-            _result = new UserProfileEntity(_tmpId,_tmpTone,_tmpEnergyLevel,_tmpXpTotal,_tmpRank,_tmpFireCharges,_tmpPreferredTimePerDay);
+            final String _tmpActiveTitle;
+            if (_cursor.isNull(_cursorIndexOfActiveTitle)) {
+              _tmpActiveTitle = null;
+            } else {
+              _tmpActiveTitle = _cursor.getString(_cursorIndexOfActiveTitle);
+            }
+            final String _tmpUnlockedTitles;
+            if (_cursor.isNull(_cursorIndexOfUnlockedTitles)) {
+              _tmpUnlockedTitles = null;
+            } else {
+              _tmpUnlockedTitles = _cursor.getString(_cursorIndexOfUnlockedTitles);
+            }
+            final int _tmpSkillPoints;
+            _tmpSkillPoints = _cursor.getInt(_cursorIndexOfSkillPoints);
+            final String _tmpUnlockedSkills;
+            if (_cursor.isNull(_cursorIndexOfUnlockedSkills)) {
+              _tmpUnlockedSkills = null;
+            } else {
+              _tmpUnlockedSkills = _cursor.getString(_cursorIndexOfUnlockedSkills);
+            }
+            final int _tmpCurrentStreak;
+            _tmpCurrentStreak = _cursor.getInt(_cursorIndexOfCurrentStreak);
+            final int _tmpLongestStreak;
+            _tmpLongestStreak = _cursor.getInt(_cursorIndexOfLongestStreak);
+            final long _tmpLastQuestCompletedDate;
+            _tmpLastQuestCompletedDate = _cursor.getLong(_cursorIndexOfLastQuestCompletedDate);
+            final int _tmpStreakSaverUsed;
+            _tmpStreakSaverUsed = _cursor.getInt(_cursorIndexOfStreakSaverUsed);
+            final long _tmpDailyRitualCompletedDate;
+            _tmpDailyRitualCompletedDate = _cursor.getLong(_cursorIndexOfDailyRitualCompletedDate);
+            _result = new UserProfileEntity(_tmpId,_tmpTone,_tmpEnergyLevel,_tmpXpTotal,_tmpRank,_tmpFireCharges,_tmpPreferredTimePerDay,_tmpActiveTitle,_tmpUnlockedTitles,_tmpSkillPoints,_tmpUnlockedSkills,_tmpCurrentStreak,_tmpLongestStreak,_tmpLastQuestCompletedDate,_tmpStreakSaverUsed,_tmpDailyRitualCompletedDate);
           } else {
             _result = null;
           }

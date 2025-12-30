@@ -27,7 +27,16 @@ data class UserProfileEntity(
     val xpTotal: Long,
     val rank: String,
     val fireCharges: Int,
-    val preferredTimePerDay: Int
+    val preferredTimePerDay: Int,
+    val activeTitle: String,
+    val unlockedTitles: String, // Comma separated
+    val skillPoints: Int,
+    val unlockedSkills: String, // Comma separated
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val lastQuestCompletedDate: Long,
+    val streakSaverUsed: Int, // Boolean as Int (0/1)
+    val dailyRitualCompletedDate: Long
 )
 
 @Entity(tableName = "items")

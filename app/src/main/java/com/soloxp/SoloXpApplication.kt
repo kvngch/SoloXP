@@ -9,7 +9,7 @@ import com.soloxp.data.repository.SoloXpRepositoryImpl
 class SoloXpApplication : Application() {
     val database: SoloXpDatabase by lazy {
         Room.databaseBuilder(this, SoloXpDatabase::class.java, "soloxp_database")
-            .addMigrations(SoloXpDatabase.MIGRATION_2_3)
+            .addMigrations(SoloXpDatabase.MIGRATION_2_3, SoloXpDatabase.MIGRATION_3_4, SoloXpDatabase.MIGRATION_4_5)
             .build()
     }
     
