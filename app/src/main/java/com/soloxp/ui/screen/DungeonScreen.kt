@@ -1,7 +1,7 @@
 package com.soloxp.ui.screen
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,10 +14,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,25 +98,57 @@ fun DungeonScreen(
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    // Streak Badge
+                    // Pulsing Streak Badge
                     if (profile.currentStreak > 0) {
+                        val infiniteTransition = rememberInfiniteTransition(label = "streak_pulse")
+                        val pulseScale by infiniteTransition.animateFloat(
+                            initialValue = 1f,
+                            targetValue = 1.1f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(1000, easing = FastOutSlowInEasing),
+                                repeatMode = RepeatMode.Reverse
+                            ),
+                            label = "pulse"
+                        )
+                        
                         val streakBonus = (StreakManager.calculateStreakBonus(profile.currentStreak) * 100).toInt()
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "🔥 ${profile.currentStreak}",
-                                color = Color(0xFFFF6B35),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Black
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "+$streakBonus%",
-                                color = NeonCyan,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        
+                        Box(
+                            modifier = Modifier
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = RoundedCornerShape(12.dp),
+                                    ambientColor = NeonRed.copy(alpha = 0.6f)
+                                )
+                                .background(
+                                    Brush.horizontalGradient(RedGradient),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "🔥",
+                                    fontSize = (16 * pulseScale).sp,
+                                    modifier = Modifier.scale(pulseScale)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${profile.currentStreak}",
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Black
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "+$streakBonus%",
+                                    color = NeonCyan,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                     Text(text = "ÉNERGIE", color = Color.Gray, fontSize = 12.sp)
                     Text(
@@ -260,17 +297,52 @@ fun QuestCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Category icon with gradient
+            val categoryGradient = when (quest.category) {
+                com.soloxp.domain.model.QuestCategory.MIND -> listOf(Color(0xFF6366F1), Color(0xFF8B5CF6))
+                com.soloxp.domain.model.QuestCategory.SPORT -> listOf(Color(0xFFEF4444), Color(0xFFF97316))
+                com.soloxp.domain.model.QuestCategory.HEALTH -> listOf(Color(0xFF10B981), Color(0xFF14B8A6))
+                com.soloxp.domain.model.QuestCategory.SOCIAL -> listOf(Color(0xFFF59E0B), Color(0xFFEAB308))
+                com.soloxp.domain.model.QuestCategory.DISCIPLINE -> PurpleGradient
+                com.soloxp.domain.model.QuestCategory.SLEEP -> listOf(Color(0xFF3B82F6), Color(0xFF6366F1))
+            }
+            
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .background(neonColor.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                    .border(1.dp, neonColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+                    .size(48.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        ambientColor = categoryGradient.first().copy(alpha = 0.4f)
+                    )
+                    .background(
+                        Brush.linearGradient(categoryGradient),
+                        RoundedCornerShape(10.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.3f),
+                                Color.White.copy(alpha = 0.1f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = quest.category.name.take(1), 
-                    color = neonColor, 
-                    fontWeight = FontWeight.Black
+                    color = Color.White, 
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp,
+                    style = TextStyle(
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.5f),
+                            offset = Offset(0f, 2f),
+                            blurRadius = 4f
+                        )
+                    )
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
