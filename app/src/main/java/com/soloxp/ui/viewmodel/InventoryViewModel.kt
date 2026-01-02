@@ -43,7 +43,14 @@ class InventoryViewModel(private val repository: SoloXpRepository) : ViewModel()
             
             if (updatedProfile != profile) {
                 repository.saveUserProfile(updatedProfile)
-                repository.deleteItem(item)
+                
+                // Décrémenter la quantité si > 1, sinon supprimer l'item
+                if (item.quantity > 1) {
+                    val updatedItem = item.copy(quantity = item.quantity - 1)
+                    repository.updateItem(updatedItem)
+                } else {
+                    repository.deleteItem(item)
+                }
             }
         }
     }

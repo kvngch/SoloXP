@@ -19,6 +19,7 @@ interface SoloXpRepository {
     // Item Management
     fun getItems(): Flow<List<Item>>
     suspend fun saveItem(item: Item)
+    suspend fun updateItem(item: Item)
     suspend fun deleteItem(item: Item)
     suspend fun getItemById(id: String): Item?
 }
@@ -51,6 +52,10 @@ class SoloXpRepositoryImpl(
 
     override suspend fun saveItem(item: Item) {
         itemDao.insertItem(item.toEntity())
+    }
+
+    override suspend fun updateItem(item: Item) {
+        itemDao.updateItem(item.toEntity())
     }
 
     override suspend fun deleteItem(item: Item) {

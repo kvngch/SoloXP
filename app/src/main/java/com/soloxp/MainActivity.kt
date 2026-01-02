@@ -106,7 +106,12 @@ fun Dashboard(repository: SoloXpRepository, navController: androidx.navigation.N
                 })
                 DungeonScreen(viewModel = vm)
             }
-            composable(Screen.Quests.route) { QuestsScreen(quests = emptyList()) }
+            composable(Screen.Quests.route) {
+                val vm: QuestsViewModel = viewModel(factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuestsViewModel(repository) as T
+                })
+                QuestsScreen(viewModel = vm)
+            }
             composable(Screen.Progress.route) { 
                 val vm: ProgressViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T = ProgressViewModel(repository) as T

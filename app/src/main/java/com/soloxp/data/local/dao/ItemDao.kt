@@ -15,6 +15,9 @@ interface ItemDao {
     @Delete
     suspend fun deleteItem(item: ItemEntity)
 
+    @Update
+    suspend fun updateItem(item: ItemEntity)
+
     @Query("SELECT * FROM items WHERE id = :id")
     suspend fun getItemById(id: String): ItemEntity?
 }

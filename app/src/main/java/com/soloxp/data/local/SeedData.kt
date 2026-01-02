@@ -6,57 +6,143 @@ import java.util.UUID
 object SeedData {
     fun getInitialQuests(): List<Quest> {
         val quests = mutableListOf<Quest>()
-        
-        // --- CATEGORY: MIND (ESPRIT) ---
+
+        // --- HEALTH ---
         quests.addAll(listOf(
-            Quest(UUID.randomUUID().toString(), "Respirations conscientes (10)", QuestCategory.MIND, Difficulty.MICRO, 2, 5, "Ferme les yeux et prends 10 grandes inspirations.", "10 cycles respiratoires profonds achevés."),
-            Quest(UUID.randomUUID().toString(), "Ouvrir la fenêtre", QuestCategory.MIND, Difficulty.MICRO, 1, 3, "Laisse entrer l'air frais et la lumière.", "Fenêtre ouverte pendant au moins 1 minute."),
-            Quest(UUID.randomUUID().toString(), "Écrire une pensée positive", QuestCategory.MIND, Difficulty.MINI, 3, 10, "Note une chose pour laquelle tu es reconnaissant aujourd'hui.", "Une phrase positive écrite sur un support."),
-            Quest(UUID.randomUUID().toString(), "Méditation guidée (5 min)", QuestCategory.MIND, Difficulty.MINI, 5, 15, "Utilise une app ou reste simplement en silence.", "5 minutes de calme complétées."),
-            Quest(UUID.randomUUID().toString(), "Journaling du soir", QuestCategory.MIND, Difficulty.STANDARD, 15, 30, "Résume ta journée en quelques lignes, sans jugement.", "Au moins 3 phrases écrites."),
-            Quest(UUID.randomUUID().toString(), "Déconnexion totale (30 min)", QuestCategory.MIND, Difficulty.STANDARD, 30, 45, "Pas d'écrans. Lis, dessine ou contemple.", "30 minutes sans téléphone ni TV.")
+            createQuest("Hydratation Vitale", QuestCategory.HEALTH, Difficulty.MICRO, 1, 5, 
+                "Bois un grand verre d'eau immédiatement.", 
+                "Verre vide."),
+            createQuest("Désintox Sucrée", QuestCategory.HEALTH, Difficulty.STANDARD, 0, 20, 
+                "Ne consomme aucune boisson sucrée ou soda aujourd'hui.", 
+                "Journée terminée sans sucre liquide."),
+            createQuest("Apport Vitaminé", QuestCategory.HEALTH, Difficulty.MINI, 2, 10, 
+                "Mange un fruit ou un légume cru.", 
+                "Portion consommée."),
+            createQuest("Lumière Solaire", QuestCategory.HEALTH, Difficulty.MINI, 10, 15, 
+                "Expose-toi à la lumière naturelle du jour pendant 10 minutes.", 
+                "10 minutes passées dehors ou près d'une fenêtre."),
+            createQuest("Coupure Caféine", QuestCategory.HEALTH, Difficulty.STANDARD, 0, 25, 
+                "Ne bois pas de café après 14h00.", 
+                "Aucune caféine ingérée après l'heure limite.")
         ))
 
-        // --- CATEGORY: HEALTH (HYGIÈNE/SANTÉ) ---
+        // --- SPORT ---
         quests.addAll(listOf(
-            Quest(UUID.randomUUID().toString(), "Boire un grand verre d'eau", QuestCategory.HEALTH, Difficulty.MICRO, 1, 3, "Hydratation immédiate.", "Verre d'eau entièrement bu."),
-            Quest(UUID.randomUUID().toString(), "Se brosser les dents", QuestCategory.HEALTH, Difficulty.MICRO, 3, 5, "Un petit pas pour l'hygiène.", "Brossage de 2 minutes effectué."),
-            Quest(UUID.randomUUID().toString(), "Prendre une douche tiède", QuestCategory.HEALTH, Difficulty.MINI, 7, 15, "Sensation de fraîcheur et de renouveau.", "Douche prise."),
-            Quest(UUID.randomUUID().toString(), "Préparer un repas simple", QuestCategory.HEALTH, Difficulty.STANDARD, 20, 35, "Cuisiner quelque chose de sain (ex: salade, œufs).", "Repas préparé et consommé."),
-            Quest(UUID.randomUUID().toString(), "Rendez-vous santé", QuestCategory.HEALTH, Difficulty.BOSS, 45, 100, "Médecin, dentiste ou thérapeute. Tu l'as fait !", "Rendez-vous honoré.")
+            createQuest("Éveil Musculaire", QuestCategory.SPORT, Difficulty.MICRO, 2, 5, 
+                "Fais 5 pompes (sur genoux acceptés) ou 5 squats.", 
+                "5 répétitions effectuées."),
+            createQuest("Marche de l'Éclaireur", QuestCategory.SPORT, Difficulty.MINI, 15, 20, 
+                "Marche d'un pas dynamique pendant 15 minutes.", 
+                "15 minutes de marche complétées."),
+            createQuest("Gainage du Guerrier", QuestCategory.SPORT, Difficulty.MINI, 1, 15, 
+                "Tiens la position de planche (gainage) le plus longtemps possible (min 30s).", 
+                "30 secondes de gainage tenues."),
+            createQuest("Mobilité Articulaire", QuestCategory.SPORT, Difficulty.MINI, 5, 10, 
+                "Fais tourner tes poignets, épaules, nuque et chevilles.", 
+                "Toutes les articulations échauffées."),
+            createQuest("Assaut Cardio", QuestCategory.SPORT, Difficulty.BOSS, 30, 100, 
+                "Une séance de sport intense (course, hiit, salle) de 30 min minimum.", 
+                "Séance terminée et transpiration validée.")
         ))
 
-        // --- CATEGORY: SPORT (FORME) ---
+        // --- MIND ---
         quests.addAll(listOf(
-            Quest(UUID.randomUUID().toString(), "S'étirer (1 min)", QuestCategory.SPORT, Difficulty.MICRO, 1, 4, "Réveille tes muscles.", "Session d'étirement terminée."),
-            Quest(UUID.randomUUID().toString(), "Marche de 5 minutes", QuestCategory.SPORT, Difficulty.MINI, 5, 12, "Fais le tour du pâté de maisons.", "Promenade effectuée."),
-            Quest(UUID.randomUUID().toString(), "10 minutes de mobilité", QuestCategory.SPORT, Difficulty.MINI, 10, 20, "Suis une routine de stretching simple.", "10 minutes d'exercice terminées."),
-            Quest(UUID.randomUUID().toString(), "Session cardio (20 min)", QuestCategory.SPORT, Difficulty.STANDARD, 20, 50, "Course, vélo ou fitness dynamique.", "20 minutes d'activité intense."),
-            Quest(UUID.randomUUID().toString(), "Entraînement complet", QuestCategory.SPORT, Difficulty.BOSS, 45, 120, "Ta séance de sport habituelle. Force !", "Séance complète terminée.")
+            createQuest("Respiration Tactique", QuestCategory.MIND, Difficulty.MICRO, 2, 5, 
+                "Respire en carré : inspire 4s, bloque 4s, expire 4s, bloque 4s. Répète 4 fois.", 
+                "4 cycles de respiration carrée effectués."),
+            createQuest("Lecture Arcane", QuestCategory.MIND, Difficulty.STANDARD, 15, 25, 
+                "Lis 10 pages d'un livre (pas de réseaux sociaux).", 
+                "10 pages lues."),
+            createQuest("Gratitude Quotidienne", QuestCategory.MIND, Difficulty.MINI, 5, 15, 
+                "Écris 3 choses positives qui te sont arrivées récemment.", 
+                "3 points notés sur papier ou note."),
+            createQuest("Silence Force", QuestCategory.MIND, Difficulty.MINI, 5, 10, 
+                "Reste assis en silence sans rien faire pendant 5 minutes.", 
+                "5 minutes de silence absolu."),
+            createQuest("Apprentissage Rapide", QuestCategory.MIND, Difficulty.STANDARD, 15, 20, 
+                "Regarde une vidéo éducative ou lis un article sur un sujet nouveau.", 
+                "Une nouvelle notion apprise.")
         ))
 
-        // --- Repeat and diversify to reach ~150 (simulated for brevity in this specific tool call, 
-        // but imagine 130 more variations like 'Faire son lit', 'Arroser les plantes', 'Appeler un ami') ---
-        // For the sake of the requirement, I'll add a loop with variations.
-        
-        val categories = QuestCategory.values()
-        val difficulties = Difficulty.values()
-        
-        for (i in 1..130) {
-            val cat = categories[i % categories.size]
-            val diff = difficulties[i % difficulties.size]
-            quests.add(Quest(
-                UUID.randomUUID().toString(),
-                "Mission ${cat.name} #$i",
-                cat,
-                diff,
-                (i % 30) + 1,
-                (i % 50) + 10,
-                "Consigne pour la mission $i dans la catégorie ${cat.name}.",
-                "Mission accomplie selon les standards."
-            ))
-        }
+        // --- DISCIPLINE ---
+        quests.addAll(listOf(
+            createQuest("Le Lit du Roi", QuestCategory.DISCIPLINE, Difficulty.MICRO, 2, 5, 
+                "Fais ton lit au carré dès le lever.", 
+                "Lit fait et chambre rangée en apparence."),
+            createQuest("Environnement Pur", QuestCategory.DISCIPLINE, Difficulty.MINI, 5, 10, 
+                "Débarrasse ton bureau ou ta table de tout ce qui traîne.", 
+                "Surface de travail vide et propre."),
+            createQuest("La Grenouille", QuestCategory.DISCIPLINE, Difficulty.STANDARD, 0, 30, 
+                "Identifie et accomplis ta tâche la plus pénible en premier.", 
+                "La tâche la plus redoutée est faite."),
+            createQuest("Zéro Distraction", QuestCategory.DISCIPLINE, Difficulty.BOSS, 60, 50, 
+                "Travaille 60 minutes sans téléphone ni notifications.", 
+                "1 heure de travail ininterrompu."),
+            createQuest("Préparation Tactique", QuestCategory.DISCIPLINE, Difficulty.MINI, 5, 10, 
+                "Prépare tes affaires (sac, vêtements) pour le lendemain.", 
+                "Affaires prêtes pour demain.")
+        ))
+
+        // --- SOCIAL ---
+        quests.addAll(listOf(
+            createQuest("Signal de Vie", QuestCategory.SOCIAL, Difficulty.MICRO, 1, 5, 
+                "Envoie un message sympa à un ami ou un proche.", 
+                "Message envoyé."),
+            createQuest("Connexion Vocale", QuestCategory.SOCIAL, Difficulty.STANDARD, 10, 20, 
+                "Appelle quelqu'un au lieu d'envoyer un message.", 
+                "Appel passé."),
+            createQuest("Compliment Sincère", QuestCategory.SOCIAL, Difficulty.MINI, 1, 10, 
+                "Fais un compliment honnête à quelqu'un aujourd'hui.", 
+                "Compliment donné."),
+            createQuest("Écoute Active", QuestCategory.SOCIAL, Difficulty.STANDARD, 0, 20, 
+                "Lors d'une conversation, écoute sans interrompre ni préparer ta réponse.", 
+                "Une conversation menée avec pleine attention."),
+            createQuest("Acte de Bonté", QuestCategory.SOCIAL, Difficulty.BOSS, 0, 50, 
+                "Rends service à quelqu'un sans rien attendre en retour.", 
+                "Service rendu.")
+        ))
+
+        // --- SLEEP ---
+        quests.addAll(listOf(
+            createQuest("Couvre-feu Digital", QuestCategory.SLEEP, Difficulty.STANDARD, 0, 25, 
+                "Aucun écran 23h soir.", // Assuming 30 mins before bed, specific time makes it clearer
+                "Ecrans éteints à 23h."),
+            createQuest("Sanctuaire de Repos", QuestCategory.SLEEP, Difficulty.MINI, 5, 10, 
+                "Aère ta chambre 5 minutes avant de dormir.", 
+                "Chambre aérée et fraîche."),
+            createQuest("Routine Nocturne", QuestCategory.SLEEP, Difficulty.MINI, 10, 15, 
+                "Prépare-toi à dormir (dents, pyjama) 30 min avant l'heure cible.", 
+                "Prêt à dormir en avance."),
+            createQuest("Réveil de Précision", QuestCategory.SLEEP, Difficulty.STANDARD, 0, 25, 
+                "Lève-toi dès la première sonnerie (pas de snooze).", 
+                "Debout sans reporter l'alarme."),
+            createQuest("Huit Heures de Stase", QuestCategory.SLEEP, Difficulty.BOSS, 0, 50, 
+                "Dors au moins 7h30 ou 8h cette nuit.", 
+                "8 heures de sommeil atteintes.")
+        ))
 
         return quests
+    }
+
+    private fun createQuest(
+        title: String, 
+        category: QuestCategory, 
+        difficulty: Difficulty, 
+        duration: Int, 
+        xp: Int, 
+        instructions: String,
+        successCriteria: String
+    ): Quest {
+        return Quest(
+            id = UUID.randomUUID().toString(),
+            title = title,
+            category = category,
+            difficulty = difficulty,
+            durationMinutes = duration,
+            xpReward = xp,
+            instructions = instructions,
+            successCriteria = successCriteria,
+            isCompleted = false
+        )
     }
 }
